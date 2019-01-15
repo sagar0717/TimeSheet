@@ -10,6 +10,7 @@ namespace TimeSheetManagement.Business
 {
     /// <summary>
     /// An Employee Book is a collection of Employees.
+    /// Its a singelton class which only allows one instance of itself to be created
     /// This class represents the core domain logic for adding and searching the employees.
     /// </summary>
     public class EmployeeBook
@@ -26,18 +27,21 @@ namespace TimeSheetManagement.Business
         /// </summary>
         private List<Employee> employees;
 
-
         private static EmployeeBook _instance;
-        private EmployeeBook()
+        private EmployeeBook() // Prevent outside instantiation
         {
             employees = new List<Employee>();
             if (File.Exists(employeePath))
                 Load(employeePath);
         }
 
+        /// <summary>
+        /// Constructor for 
+        /// </summary>
+        /// <returns></returns>
         public static EmployeeBook Instance()
         {
-
+            // Uses lazy initialization.
             if (_instance == null)
             {
                 _instance = new EmployeeBook();
@@ -46,14 +50,11 @@ namespace TimeSheetManagement.Business
             return _instance;
         }
 
+        // for clearing singelton class instance
         public static void ClearInstance()
         {
             _instance = null;
         }
-
-
-
-
 
         /// <summary>
         /// Add an Employee to the Employee Book.
@@ -64,15 +65,14 @@ namespace TimeSheetManagement.Business
         /// <param name="employee">The new Employee</param>
         public bool Add(Employee employee)
         {
-            EmployeeValidator validator = new EmployeeValidator();
-            if (employees.Where(x => x.EmpId == employee.EmpId).Count() == 0)
+            EmployeeValidator validator = new EmployeeValidator(); // to do the validation employee entry in a system
+            if (employees.Where(x => x.EmpId == employee.EmpId).Count() == 0) // preventing duplicate entry
             {
                 if (!validator.Validate(employee))
                 {
                     employees.Add(employee);
                     return true;
                 }
-
             }
             return false;
         }
@@ -106,7 +106,7 @@ namespace TimeSheetManagement.Business
         /// <summary>
         /// Retrieve an employee based on employeeId.
         /// </summary>
-        /// <param name="id">The substring to search.</param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public Employee GetEmployeeById(int id)
         {

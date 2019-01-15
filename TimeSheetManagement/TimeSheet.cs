@@ -7,6 +7,10 @@ using System.Text;
 
 namespace TimeSheetManagement.Business
 {
+    /// <summary>
+    /// This is main class for making an entry in Timesheet and 
+    /// getting the details of hourly work and cost for any employee on weekly basis.
+    /// </summary>
     public class TimeSheet
     {
         /// <summary>
@@ -20,8 +24,8 @@ namespace TimeSheetManagement.Business
         /// </summary>        
         private const string timeSheetPath = "timesheet.xml";
 
-        DateTime dayStartTime; // Time entry for start of day.
-        DateTime dayEndTime; //Time entry for end of day.
+        DateTime dayStartTime; // default Time entry for start of day.
+        DateTime dayEndTime; // default Time entry for end of day.
 
         /// <summary>
         /// Create a new, empty timesheet.
@@ -31,6 +35,14 @@ namespace TimeSheetManagement.Business
             timeSheet = new List<TimeSheetEntry>();
         }
 
+        /// <summary>
+        /// Addding a new entry in timesheet for a respective employee based 
+        /// on his punchIn and punchOut time for a day.
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <param name="strTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
         public bool InputHoursForDay(int employeeId, string strTime, string endTime)
         {
             // Empty employee book
@@ -80,7 +92,8 @@ namespace TimeSheetManagement.Business
             return null;
         }
         /// <summary>
-        /// This is an overloaded method which calculates weekly wages for a particular employee based on dates in the same week
+        /// This is an overloaded method which calculates weekly wages for a particular employee 
+        /// based on dates if presen in the same week
         /// </summary>
         /// <param name="employeeName"></param>
         /// <param name="weekStartDate"></param>

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace TimeSheetManagement.Business
 {
+    /// <summary>
+    /// Details of an employee stored in EmployeeBook.
+    /// </summary>
     public class Employee
     {
         public int EmpId { get; set; }
