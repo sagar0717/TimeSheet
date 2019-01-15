@@ -8,7 +8,7 @@ using TimeSheetManagement.Business;
 namespace TimeSheetManagement.Test
 {
     [TestFixture]
-    class ManageEmployeeTest
+   public class ManageEmployeeTest
     {
         EmployeeBook employees;
         string employeepath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\TimeSheetManagement\bin\Debug\netcoreapp2.1\employees.xml"));
@@ -141,6 +141,8 @@ namespace TimeSheetManagement.Test
             {
                 File.Delete(employeepath);
             }
+            employees = null;
+            EmployeeBook.ClearInstance();
         }
 
     }

@@ -11,7 +11,7 @@ namespace TimeSheetManagement.Business
         {
             if (t.EmpId == 0 || String.IsNullOrEmpty(t.EmpName) || t.EmpHourRate == 0)
                 return true;
-            else return t.EmpHourRate > maxRatePerHour ? true : false;
+             return t.EmpHourRate > maxRatePerHour ? true : false;
         }
     }
 }

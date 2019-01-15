@@ -35,15 +35,14 @@ namespace TimeSheetManagement.Business
         {
             // Empty employee book
             EmployeeBook employees = EmployeeBook.Instance();
+            Employee emp = employees.GetEmployeeById(employeeId); // Fetching the particular employee for whom timecard entry needs to be added
 
-            // If employee with the searched name exists
-            if (employees.AllEmployees.Where(x => x.EmpId == employeeId).Count() > 0)
+            // If employee exists
+            if (emp != null)
             {
-                Employee emp = employees.AllEmployees.Where(x => x.EmpId == employeeId).FirstOrDefault(); // Fetching the particular employee for whom timecard entry needs to be added
-
                 if (Util.ValidateDate(strTime, ref dayStartTime) && Util.ValidateDate(endTime, ref dayEndTime)) // validating start and end time is in correct format
                 {
-                    bool duplicateEntry = Util.ValidateTimeSheetEntry(dayStartTime, timeSheet, emp); // validating the duplicacy of the entry already done
+                    bool duplicateEntry = TimeSheetEntry.IsEntryExists(dayStartTime, timeSheet, emp); // validating the duplicacy of the entry already done
 
                     // if no duplicate entry exists then creating new entry for the day for the respective user.
                     if (!duplicateEntry)
@@ -55,7 +54,6 @@ namespace TimeSheetManagement.Business
                             OutTime = dayEndTime
                         });
 
-
                         TimeSheetSave(timeSheetPath); // Saving the values in xml file
                         return true;
                     }
@@ -64,13 +62,6 @@ namespace TimeSheetManagement.Business
             return false;
         }
 
-        public bool AddEntry(TimeSheetEntry employee)
-        {
-            timeSheet.Add(employee);
-            return true;
-        }
-
-
 
         /// <summary>
         /// This method calculate the weekly wages for a particular employee based on Weeknumber of the year
@@ -78,33 +69,16 @@ namespace TimeSheetManagement.Business
         /// <param name="employeeName"></param>
         /// <param name="weekNumber"></param>
         /// <returns></returns>
-        public WorkWeekDetails CalculateWeeklyWages(string employeeName, int weekNumber)
+        public WorkWeekDetails CalculateWeeklyWages(int employeeId, int weekNumber)
         {
-            double payables = 0;
-            double hoursWorkedInWeek = 0;
-
             EmployeeBook employees = EmployeeBook.Instance();
-            if (employees.AllEmployees.Where(x => x.EmpName == employeeName).Count() > 0)
+            Employee emp = employees.GetEmployeeById(employeeId);
+            if (emp != null)
             {
-                Employee emp = employees.AllEmployees.Where(x => x.EmpName == employeeName).FirstOrDefault();
-
-                foreach (TimeSheetEntry entry in timeSheet.Where(x => x.EmployeeID == emp.EmpId))
-                {
-                    hoursWorkedInWeek = hoursWorkedInWeek + entry.NumberOfHoursWorked;
-                    payables = payables + (entry.NumberOfHoursWorked * (emp.EmpHourRate + ((entry.Penalty * emp.EmpHourRate) / 100)));
-                }
-
-                return new WorkWeekDetails()
-                {
-                    WeekNumber = weekNumber,
-                    HoursWorked = Math.Round(hoursWorkedInWeek, 2),
-                    Cost = Math.Round(payables, 2)
-                };
+                return Payables(emp, weekNumber);
             }
-
             return null;
         }
-
         /// <summary>
         /// This is an overloaded method which calculates weekly wages for a particular employee based on dates in the same week
         /// </summary>
@@ -112,39 +86,49 @@ namespace TimeSheetManagement.Business
         /// <param name="weekStartDate"></param>
         /// <param name="weekEndDate"></param>
         /// <returns></returns>
-        public WorkWeekDetails CalculateWeeklyWages(string employeeName, DateTime weekStartDate, DateTime weekEndDate)
+        public WorkWeekDetails CalculateWeeklyWages(int employeeId, DateTime weekStartDate, DateTime weekEndDate)
         {
-            double payables = 0;
-            double hoursWorkedInWeek = 0;
             EmployeeBook employees = EmployeeBook.Instance();
+            Employee emp = employees.GetEmployeeById(employeeId);
 
-
-            if (employees.AllEmployees.Where(x => x.EmpName == employeeName).Count() > 0)
+            if (emp != null)
             {
-                Employee emp = employees.AllEmployees.Where(x => x.EmpName == employeeName).FirstOrDefault();
                 int StartWeek = Util.GetWeekNumber(weekStartDate);
                 int EndWeek = Util.GetWeekNumber(weekEndDate);
 
                 if (StartWeek == EndWeek)
                 {
-
-                    foreach (TimeSheetEntry entry in timeSheet.Where(x => x.EmployeeID == emp.EmpId))
-                    {
-                        hoursWorkedInWeek = hoursWorkedInWeek + entry.NumberOfHoursWorked;
-                        payables = payables + (entry.NumberOfHoursWorked * (emp.EmpHourRate + ((entry.Penalty * emp.EmpHourRate) / 100)));
-                    }
-
-                    return new WorkWeekDetails()
-                    {
-                        WeekNumber = StartWeek,
-                        HoursWorked = Math.Round(hoursWorkedInWeek, 2),
-                        Cost = Math.Round(payables, 2)
-                    };
+                    return Payables(emp, StartWeek);
                 }
             }
             return null;
         }
 
+        public WorkWeekDetails Payables(Employee emp, int weekNumber)
+        {
+            double payables = 0;
+            double hoursWorkedInWeek = 0;
+            foreach (TimeSheetEntry entry in timeSheet.Where(x => x.EmployeeID == emp.EmpId))
+            {
+                hoursWorkedInWeek = hoursWorkedInWeek + entry.NumberOfHoursWorked;
+                payables = payables + (entry.NumberOfHoursWorked * (emp.EmpHourRate + ((entry.Penalty * emp.EmpHourRate) / 100)));
+            }
+            if (hoursWorkedInWeek > 0)
+            {
+                return new WorkWeekDetails()
+                {
+                    WeekNumber = weekNumber,
+                    HoursWorked = Math.Round(hoursWorkedInWeek, 2),
+                    Cost = Math.Round(payables, 2)
+                };
+            }
+            return null;
+        }
+
+        public void AddEntry(TimeSheetEntry employee)
+        {
+            timeSheet.Add(employee);
+        }
 
         public void TimeSheetLoad(string path)
         {

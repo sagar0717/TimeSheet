@@ -26,26 +26,7 @@ namespace TimeSheetManagement.Business
             return true;
         }
 
-        /// <summary>
-        /// This method validates the every new timecard entry against the enteries 
-        /// already available for the particular employee on specific date to check for Duplicacy
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="timeCardEntries"></param>
-        /// <param name="employee"></param>
-        /// <returns>Result (True or False)</returns>
-        public static bool ValidateTimeSheetEntry(DateTime date, List<TimeSheetEntry> timeSheetEntries, Employee employee)
-        {
-            if (timeSheetEntries.Count > 0)
-            {
-                foreach (TimeSheetEntry entry in timeSheetEntries)
-                {
-                    if (entry.EmployeeID == employee.EmpId && entry.InTime.Date == date.Date)
-                        return true; // returns true if entry already available
-                }
-            }
-            return false; // returns false if no entry is available
-        }
+        
 
         /// <summary>
         /// This method returns the week number from the year for the date enquired based on culture

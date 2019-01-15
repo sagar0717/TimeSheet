@@ -46,6 +46,13 @@ namespace TimeSheetManagement.Business
             return _instance;
         }
 
+        public static void ClearInstance()
+        {
+            _instance = null;
+        }
+
+
+
 
 
         /// <summary>
@@ -101,7 +108,7 @@ namespace TimeSheetManagement.Business
         /// </summary>
         /// <param name="id">The substring to search.</param>
         /// <returns></returns>
-        public Employee SearchById(int id)
+        public Employee GetEmployeeById(int id)
         {
             return employees.Where(x => x.EmpId == id).FirstOrDefault();
         }

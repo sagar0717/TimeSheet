@@ -105,19 +105,35 @@ namespace TimeSheetManagement.Business
         /// <returns>Rate for the day</returns>
         public double CalculatePenaltyRate(DayOfWeek Day)
         {
-            double rate;
             if (Day == DayOfWeek.Saturday)
-            {
-                rate = penaltyRateSaturday;
-            }
-            else if (Day == DayOfWeek.Sunday)
-            {
-                rate = penaltyRateSunday;
-            }
-            else
-                rate = penaltyRateWeekDay;
+                return penaltyRateSaturday;
 
-            return rate;
+            if (Day == DayOfWeek.Sunday)
+                return penaltyRateSunday;
+
+            return penaltyRateWeekDay;
+
+        }
+
+        /// <summary>
+        /// This method validates the every new timecard entry against the enteries 
+        /// already available for the particular employee on specific date to check for Duplicacy
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="timeCardEntries"></param>
+        /// <param name="employee"></param>
+        /// <returns>Result (True or False)</returns>
+        public static bool IsEntryExists(DateTime date, List<TimeSheetEntry> timeSheetEntries, Employee employee)
+        {
+            if (timeSheetEntries.Count > 0)
+            {
+                foreach (TimeSheetEntry entry in timeSheetEntries)
+                {
+                    if (entry.EmployeeID == employee.EmpId && entry.InTime.Date == date.Date)
+                        return true; // returns true if entry already available
+                }
+            }
+            return false; // returns false if no entry is available
         }
     }
 }
