@@ -8,7 +8,6 @@ namespace TimeSheetManagement.Business
     {
         public int EmpId { get; set; }
         public string EmpName { get; set; }
-        public int EmpHourRate { get; set; }
-
+        public double EmpHourRate { get; set; }
     }
 }

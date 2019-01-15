@@ -14,16 +14,18 @@ namespace TimeSheetManagement.Business
     /// </summary>
     public class EmployeeBook
     {
+
+        /// <summary>
+        /// The filename to store the employees details.
+        /// </summary>
+        private const string employeePath = "employees.xml";
+
         /// <summary>
         /// The in-memory "database" of employees.
         /// Save must be called if any changes are to be persisted.
         /// </summary>
         private List<Employee> employees;
 
-        /// <summary>
-        /// The filename to store the employees details.
-        /// </summary>
-        private const string employeePath = "employees.xml";
 
         private static EmployeeBook _instance;
         private EmployeeBook()
@@ -45,25 +47,25 @@ namespace TimeSheetManagement.Business
         }
 
 
-        double maxRatePerHour;
-        bool succ = double.TryParse(ConfigurationManager.AppSettings["MaxRatePerHour"], out double maxRatePerHour);
 
         /// <summary>
         /// Add an Employee to the Employee Book.
         /// Maximum Hourly Rate allowed for any employee is 50 as per problem statement
-        /// An asumption is made that this only the case for base rate, 
+        /// An asumption is made that this is only the case for base rate, 
         /// after the penalty is applied this can increase above 50 
         /// </summary>
         /// <param name="employee">The new Employee</param>
         public bool Add(Employee employee)
         {
+            EmployeeValidator validator = new EmployeeValidator();
             if (employees.Where(x => x.EmpId == employee.EmpId).Count() == 0)
             {
-                if (employee.EmpHourRate <= 50)
+                if (!validator.Validate(employee))
                 {
                     employees.Add(employee);
                     return true;
                 }
+
             }
             return false;
         }

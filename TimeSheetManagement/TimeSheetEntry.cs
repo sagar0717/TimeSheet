@@ -8,6 +8,16 @@ namespace TimeSheetManagement.Business
     [DataContract(Name = "TimeCard")]
     public class TimeSheetEntry
     {
+        private const double penaltyRateWeekDay = 0;
+        private const double penaltyRateSaturday = 1.5;
+        private const double penaltyRateSunday = 2;
+
+        private double _penalty;
+        private int _week;
+        private double _numberofHoursWorked;
+        private DayOfWeek _workDay;
+
+
         [DataMember]
         public Guid TimeSheetId { get; set; } = Guid.NewGuid();
         [DataMember]
@@ -18,18 +28,6 @@ namespace TimeSheetManagement.Business
         public DateTime OutTime { get; set; }
 
 
-        private const double penaltyRateWeekDay = 0;
-        private const double penaltyRateSaturday = 1.5;
-        private const double penaltyRateSunday = 2;
-
-
-        private double _penalty;
-
-        private int _week;
-
-        private double _numberofHoursWorked;
-
-        private DayOfWeek _workDay;
 
         [DataMember]
         public int Week
